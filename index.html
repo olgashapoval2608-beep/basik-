@@ -397,6 +397,12 @@
   let isAnimating = false;
   let transitionId = 0;
 
+  // Таймкоди підібрані вручну після перегляду reel.mp4 покадрово — рівномірний поділ
+  // тривалості на 5 давав пару "стопів" точно посеред розфокусованих кадрів-переходів
+  // між сценами (напр. rack-focus на гриль) чи менш вдалий ракурс. Ці точки — чіткі,
+  // добре скомпоновані кадри, що відповідають контенту кожної панелі.
+  const CURATED_STOPS = [0, 1.6, 4.8, 6.3, 8.0];
+
   function renderStage(){
     panels.forEach((p,i) => p.classList.toggle('active', i === stage));
     segs.forEach((s,i) => { s.style.width = i <= stage ? '100%' : '0%'; });
@@ -410,7 +416,7 @@
     reelVideo.addEventListener('loadedmetadata', () => {
       videoReady = true;
       const d = reelVideo.duration || 0;
-      stopTimes = Array.from({ length: STAGE_COUNT }, (_, i) => d * i / (STAGE_COUNT - 1));
+      stopTimes = CURATED_STOPS.map(t => Math.min(t, Math.max(0, d - 0.02)));
       reelVideo.currentTime = stopTimes[0];
       // iOS Safari refuses to seek/scrub a video that has never played — unlock it silently.
       reelVideo.play().then(() => reelVideo.pause()).catch(() => {});
