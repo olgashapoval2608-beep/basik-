@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Собеха — басейн у Фастові</title>
+<title>SOVBEZ Blue Heaven — басейн у Фастові</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --teal-deep:#0B4A54;
-    --teal-mid:#0E5C68;
-    --water:#2FB8CC;
-    --water-light:#8FE0EC;
+    --teal-deep:#0A2540;
+    --teal-mid:#123A5E;
+    --water:#2E93D6;
+    --water-light:#8FC7EF;
     --wood:#4A362B;
     --wood-light:#6B4F3F;
     --sand:#D7B88A;
@@ -76,7 +76,7 @@
     transition:background .35s ease, padding .35s ease, box-shadow .35s ease;
   }
   header.scrolled{
-    background:rgba(11,74,84,.92);
+    background:rgba(10,37,64,.92);
     backdrop-filter:blur(10px);
     padding:14px 0;
     box-shadow:0 8px 30px rgba(0,0,0,.15);
@@ -96,7 +96,7 @@
   /* ===== SCROLL-VIDEO NARRATIVE (5 stops) ===== */
   .reel-outer{
     position:relative;
-    height:180vh;
+    height:140vh;
   }
   .reel-pin{
     position:sticky;top:0;
@@ -130,6 +130,14 @@
   .panel h1 em, .panel h2 em{font-style:italic;font-weight:400;color:var(--water-light);}
   .panel .lede{margin-top:18px;font-size:16.5px;max-width:440px;color:rgba(255,255,255,.82);}
   .panel .actions{margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;}
+
+  .stat-badges{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+  .stat-badge{
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:500;
+    padding:7px 16px;border-radius:100px;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);
+    color:var(--white);backdrop-filter:blur(6px);
+  }
 
   .menu-cols{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:28px;max-width:760px;}
   .menu-row{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.16);}
@@ -181,6 +189,10 @@
     .panel{padding-bottom:48px;}
     .panel h1,.panel h2{font-size:clamp(28px,7vw,44px);}
   }
+  @media (max-width:480px){
+    .logo{font-size:19px;}
+    .logo-sub{display:none;}
+  }
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto;}
     .scroll-cue .line{animation:none;}
@@ -193,7 +205,7 @@
 <header id="header">
   <div class="wrap">
     <nav>
-      <a href="#" class="logo"><span class="dot"></span>Собеха</a>
+      <a href="#" class="logo"><span class="dot"></span>SOVBEZ <span class="logo-sub" style="font-style:normal;font-weight:400;opacity:.75;margin-left:4px;">Blue Heaven</span></a>
       <ul class="navlinks">
         <li><a href="#pool">Басейн</a></li>
         <li><a href="#menu">Меню</a></li>
@@ -220,14 +232,14 @@
     <div class="reel-scrim"></div>
 
     <div class="reel-panels">
-      <div class="panel active" data-panel="0" id="pool">
+      <div class="panel active" data-panel="0">
         <div class="panel-inner">
           <div class="stop-index">
             <div class="seg"><i data-seg="0"></i></div><div class="seg"><i data-seg="1"></i></div>
             <div class="seg"><i data-seg="2"></i></div><div class="seg"><i data-seg="3"></i></div><div class="seg"><i data-seg="4"></i></div>
           </div>
-          <h1>Занурся в літо<br><em>з головою.</em></h1>
-          <p class="lede">Собеха — відкритий басейн у Фастові. Підігріта вода, лежаки в тіні, бар і гриль — на цілий день.</p>
+          <h1>Пірни у свій кайф<br><em>з головою.</em></h1>
+          <p class="lede">SOVBEZ Blue Heaven — місце спокійного відриву у Фастові. Басейн, бар, кальяни й стейки — на цілий день.</p>
           <div class="actions">
             <a href="#findus" class="btn btn-primary">Забронювати місце →</a>
             <span style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.1em;color:rgba(255,255,255,.6);align-self:center;">SCROLL ↓</span>
@@ -235,24 +247,28 @@
         </div>
       </div>
 
-      <div class="panel" data-panel="1">
+      <div class="panel" data-panel="1" id="pool">
         <div class="panel-inner">
           <div class="stop-index">
             <div class="seg"><i data-seg="0"></i></div><div class="seg"><i data-seg="1"></i></div>
             <div class="seg"><i data-seg="2"></i></div><div class="seg"><i data-seg="3"></i></div><div class="seg"><i data-seg="4"></i></div>
           </div>
           <div class="eyebrow" style="color:var(--gold)">01 — БАСЕЙН</div>
-          <h2 style="margin-top:10px;">30°C води,<br><em>жодного поспіху.</em></h2>
+          <div class="stat-badges"><span class="stat-badge">🌡 +32°C</span><span class="stat-badge">🕒 09:00–22:00</span></div>
+          <h2 style="margin-top:14px;">Вода +32°C,<br><em>жодного поспіху.</em></h2>
           <div class="menu-cols">
             <div>
-              <div class="menu-row"><div><div class="mname">Вхідний квиток</div><span class="mnote">Дорослий, повний день</span></div><div class="mval">[ ] грн</div></div>
-              <div class="menu-row"><div><div class="mname">Дитячий квиток</div><span class="mnote">До [ ] років</span></div><div class="mval">[ ] грн</div></div>
+              <div class="menu-row"><div><div class="mname">Дорослий (12+)</div><span class="mnote">Будні · після 17:00 — 400 грн</span></div><div class="mval">500 грн</div></div>
+              <div class="menu-row"><div><div class="mname">Дитячий (5–11)</div><span class="mnote">Будні · після 17:00 — 300 грн</span></div><div class="mval">400 грн</div></div>
+              <div class="menu-row"><div><div class="mname">До 5 років</div><span class="mnote">У супроводі дорослого</span></div><div class="mval">безкоштовно</div></div>
             </div>
             <div>
-              <div class="menu-row"><div><div class="mname">Лежак під навісом</div><span class="mnote">Бронювання на день</span></div><div class="mval">[ ] грн</div></div>
-              <div class="menu-row"><div><div class="mname">Абонемент</div><span class="mnote">На місяць / сезон</span></div><div class="mval">[ ] грн</div></div>
+              <div class="menu-row"><div><div class="mname">Вихідні, увесь день</div><span class="mnote">Сб–Нд · незалежно від віку</span></div><div class="mval">800 грн</div></div>
+              <div class="menu-row"><div><div class="mname">Погодинно, дорослий</div><span class="mnote">Тільки будні дні</span></div><div class="mval">300 грн/год</div></div>
+              <div class="menu-row"><div><div class="mname">Погодинно, дитячий</div><span class="mnote">Тільки будні дні</span></div><div class="mval">200 грн/год</div></div>
             </div>
           </div>
+          <p class="lede" style="margin-top:16px;font-size:13px;">Бронювання місць — тільки на вихідні дні. Знижка 25% для УБД.</p>
         </div>
       </div>
 
@@ -262,18 +278,16 @@
             <div class="seg"><i data-seg="0"></i></div><div class="seg"><i data-seg="1"></i></div>
             <div class="seg"><i data-seg="2"></i></div><div class="seg"><i data-seg="3"></i></div><div class="seg"><i data-seg="4"></i></div>
           </div>
-          <div class="eyebrow" style="color:var(--gold)">02 — БАР</div>
-          <h2 style="margin-top:10px;">Меню бару</h2>
+          <div class="eyebrow" style="color:var(--gold)">02 — МЕНЮ</div>
+          <h2 style="margin-top:10px;">Смачна, ароматна<br><em>піца для тебе.</em></h2>
           <div class="menu-cols">
             <div>
-              <div class="menu-row"><div><div class="mname">Бургер</div><span class="mnote">[опиши склад]</span></div><div class="mval">[ ] грн</div></div>
-              <div class="menu-row"><div><div class="mname">Картопля фрі</div></div><div class="mval">[ ] грн</div></div>
-              <div class="menu-row"><div><div class="mname">Хот-дог</div></div><div class="mval">[ ] грн</div></div>
+              <div class="menu-row"><div><div class="mname">Салямі</div><span class="mnote">Томатний соус, салямі, моцарела · 450 г</span></div><div class="mval">290 грн</div></div>
+              <div class="menu-row"><div><div class="mname">М'ясний мікс</div><span class="mnote">Салямі, шинка, бекон, курка · 450 г</span></div><div class="mval">290 грн</div></div>
             </div>
             <div>
-              <div class="menu-row"><div><div class="mname">Кесадилья</div></div><div class="mval">[ ] грн</div></div>
-              <div class="menu-row"><div><div class="mname">Салат</div><span class="mnote">[опиши склад]</span></div><div class="mval">[ ] грн</div></div>
-              <div class="menu-row"><div><div class="mname">[додай позицію]</div></div><div class="mval">[ ] грн</div></div>
+              <div class="menu-row"><div><div class="mname">Чотири сири з грушею</div><span class="mnote">Дор Блю, Пармезан, горіхи · 430 г</span></div><div class="mval">290 грн</div></div>
+              <div class="menu-row"><div><div class="mname">З куркою та грибами</div><span class="mnote">Вершковий соус, печериці · 450 г</span></div><div class="mval">290 грн</div></div>
             </div>
           </div>
         </div>
@@ -286,17 +300,18 @@
             <div class="seg"><i data-seg="2"></i></div><div class="seg"><i data-seg="3"></i></div><div class="seg"><i data-seg="4"></i></div>
           </div>
           <div class="eyebrow" style="color:var(--gold)">03 — НАПОЇ</div>
-          <h2 style="margin-top:10px;">Вода в басейні — 30°C.<br><em>Пиво в келиху — крижане.</em></h2>
+          <h2 style="margin-top:10px;">Вода в басейні +32°C.<br><em>Пиво в келиху — крижане.</em></h2>
           <div class="menu-cols">
             <div>
-              <div class="menu-row"><div><div class="mname">Розливне пиво</div><span class="mnote">0.5 л</span></div><div class="mval">[ ] грн</div></div>
-              <div class="menu-row"><div><div class="mname">Коктейль</div><span class="mnote">[назва]</span></div><div class="mval">[ ] грн</div></div>
+              <div class="menu-row"><div><div class="mname">Розливне пиво</div><span class="mnote">Свіже, з крану</span></div></div>
+              <div class="menu-row"><div><div class="mname">Коктейлі та алкоголь</div></div></div>
             </div>
             <div>
-              <div class="menu-row"><div><div class="mname">Лимонад</div></div><div class="mval">[ ] грн</div></div>
-              <div class="menu-row"><div><div class="mname">Вода / сік</div></div><div class="mval">[ ] грн</div></div>
+              <div class="menu-row"><div><div class="mname">Кальяни</div></div></div>
+              <div class="menu-row"><div><div class="mname">Солодкі напої та снеки</div></div></div>
             </div>
           </div>
+          <p class="lede" style="margin-top:16px;font-size:13px;">Повна карта напоїв — на місці.</p>
         </div>
       </div>
 
@@ -307,18 +322,21 @@
             <div class="seg"><i data-seg="2"></i></div><div class="seg"><i data-seg="3"></i></div><div class="seg"><i data-seg="4"></i></div>
           </div>
           <div class="eyebrow" style="color:var(--gold)">04 — ГРИЛЬ</div>
-          <h2 style="margin-top:10px;">Гриль <em>на компанію.</em></h2>
+          <h2 style="margin-top:10px;">Стейк і смаколики<br><em>на компанію.</em></h2>
           <div class="menu-cols">
             <div>
-              <div class="menu-row"><div><div class="mname">Шашлик</div><span class="mnote">[вид м'яса]</span></div><div class="mval">[ ] грн</div></div>
-              <div class="menu-row"><div><div class="mname">Ковбаски гриль</div></div><div class="mval">[ ] грн</div></div>
+              <div class="menu-row"><div><div class="mname">Стейк</div><span class="mnote">З соусом на вибір</span></div><div class="mval">100 грн/100 г</div></div>
+              <div class="menu-row"><div><div class="mname">Фрі</div><span class="mnote">200 г</span></div><div class="mval">130 грн</div></div>
+              <div class="menu-row"><div><div class="mname">Діпи</div><span class="mnote">200 г</span></div><div class="mval">130 грн</div></div>
+              <div class="menu-row"><div><div class="mname">По-селянськи</div><span class="mnote">200 г</span></div><div class="mval">130 грн</div></div>
             </div>
             <div>
-              <div class="menu-row"><div><div class="mname">Курка на грилі</div></div><div class="mval">[ ] грн</div></div>
-              <div class="menu-row"><div><div class="mname">Овочі гриль</div></div><div class="mval">[ ] грн</div></div>
+              <div class="menu-row"><div><div class="mname">Нагетси</div><span class="mnote">6 шт</span></div><div class="mval">170 грн</div></div>
+              <div class="menu-row"><div><div class="mname">Сирні палички</div><span class="mnote">5 шт</span></div><div class="mval">170 грн</div></div>
+              <div class="menu-row"><div><div class="mname">Кекс Кіт-Кат</div><span class="mnote">90 г</span></div><div class="mval">90 грн</div></div>
             </div>
           </div>
-          <div class="actions"><a href="#findus" class="btn btn-primary">Замовити гриль на день →</a></div>
+          <div class="actions"><a href="#findus" class="btn btn-primary">Забронювати місце →</a></div>
         </div>
       </div>
     </div>
@@ -331,15 +349,15 @@
   <div class="wrap">
     <div class="section-head">
       <div class="eyebrow">Перед тим як пірнути</div>
-      <h2>Правила басейну.</h2>
+      <h2>Правила SOVBEZ Blue Heaven.</h2>
     </div>
     <div class="rules-list">
-      <div class="rule-item"><div class="rnum">01</div><p>Діти до [ ] років — тільки в супроводі дорослих.</p></div>
-      <div class="rule-item"><div class="rnum">02</div><p>Перед купанням обов'язковий душ.</p></div>
-      <div class="rule-item"><div class="rnum">03</div><p>Скляний посуд біля чаші басейну заборонено.</p></div>
-      <div class="rule-item"><div class="rnum">04</div><p>Стрибки у воду — лише у відведеній зоні.</p></div>
-      <div class="rule-item"><div class="rnum">05</div><p>[додай правило: про домашніх тварин]</p></div>
-      <div class="rule-item"><div class="rnum">06</div><p>[додай правило: про паління / алкоголь у чаші]</p></div>
+      <div class="rule-item"><div class="rnum">01</div><p>Без душу не входимо.</p></div>
+      <div class="rule-item"><div class="rnum">02</div><p>Не стрибаємо — тут не батут.</p></div>
+      <div class="rule-item"><div class="rnum">03</div><p>Діти — тільки під наглядом батьків.</p></div>
+      <div class="rule-item"><div class="rnum">04</div><p>Їжу з собою приносити заборонено — у нас є все, щоб смачно і з комфортом відпочити.</p></div>
+      <div class="rule-item"><div class="rnum">05</div><p>Тиша, chill і повага до кожного відвідувача. Вайбуйте красиво 💦</p></div>
+      <div class="rule-item"><div class="rnum">06</div><p>Бронювання місць приймаємо лише на вихідні дні.</p></div>
     </div>
   </div>
 </section>
@@ -348,20 +366,20 @@
   <div class="wrap">
     <div class="section-head">
       <div class="eyebrow">Як нас знайти</div>
-      <h2>Собеха, Фастів.</h2>
+      <h2>SOVBEZ Blue Heaven, Фастів.</h2>
     </div>
     <div class="findus-grid">
       <div class="map-box">
-        <iframe src="https://maps.google.com/maps?q=Собеха%20басейн%20Фастів&t=&z=14&ie=UTF8&iwloc=&output=embed" loading="lazy" allowfullscreen></iframe>
+        <iframe src="https://maps.google.com/maps?q=SOVBEZ%20Blue%20Heaven%20Фастів&t=&z=14&ie=UTF8&iwloc=&output=embed" loading="lazy" allowfullscreen></iframe>
       </div>
       <div class="contact-panel">
         <h2>Забронюй місце під сонцем.</h2>
         <p>Залиш номер телефону — передзвонимо і підтвердимо бронювання на обраний день.</p>
         <div>
-          <div class="info-row"><span>Адреса</span><span>Фастів, [вкажи вулицю]</span></div>
+          <div class="info-row"><span>Адреса</span><span>Фастів · мапа в Instagram-біо</span></div>
           <div class="info-row"><span>Телефон</span><span>[вкажи номер]</span></div>
           <div class="info-row"><span>Instagram</span><span>@sovbezblueheaven</span></div>
-          <div class="info-row"><span>Графік</span><span>[вкажи години]</span></div>
+          <div class="info-row"><span>Графік</span><span>Щодня, 09:00–22:00</span></div>
         </div>
         <div class="contact-actions">
           <a href="tel:+380000000000" class="btn btn-primary">Подзвонити зараз</a>
@@ -374,8 +392,8 @@
 
 <footer>
   <div class="wrap">
-    <div class="flogo">Собеха</div>
-    <div>© 2026 Собеха, Фастів. Усі права захищені.</div>
+    <div class="flogo">SOVBEZ Blue Heaven</div>
+    <div>© 2026 SOVBEZ Blue Heaven, Фастів. Усі права захищені.</div>
   </div>
 </footer>
 
@@ -482,13 +500,23 @@
     }
   }
 
+  // Коли останній стоп (04 — ГРИЛЬ) вже показано і користувач скролить далі — раніше ми
+  // просто "відпускали" нативний скрол, а він мав пройти буфер sticky-піна (140vh) власними
+  // маленькими кроками, тобто потрібно було кілька скролів, щоб дістатись "Правил". Тепер
+  // один жест одразу доскролює до наступної секції.
+  function exitToNextSection(){
+    const next = document.getElementById('rules');
+    if(next) next.scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
   window.addEventListener('wheel', (e) => {
     if(!isReelInView()) return;
     if(isAnimating){ e.preventDefault(); return; }
     const dir = e.deltaY > 0 ? 1 : (e.deltaY < 0 ? -1 : 0);
     if(dir === 0) return;
     const target = stage + dir;
-    if(target < 0 || target >= STAGE_COUNT) return; // let the browser hand off to normal scroll
+    if(target < 0) return; // нічого вище — нехай браузер сам вирішує
+    if(target >= STAGE_COUNT){ e.preventDefault(); exitToNextSection(); return; }
     e.preventDefault();
     goToStage(target);
   }, { passive:false });
@@ -504,7 +532,8 @@
     const dir = dy > 0 ? 1 : -1;
     const target = stage + dir;
     touchStartY = null;
-    if(target < 0 || target >= STAGE_COUNT) return;
+    if(target < 0) return;
+    if(target >= STAGE_COUNT){ e.preventDefault(); exitToNextSection(); return; }
     e.preventDefault();
     goToStage(target);
   }, { passive:false });
@@ -512,6 +541,21 @@
   window.addEventListener('touchend', () => { touchStartY = null; });
 
   window.addEventListener('resize', renderStage);
+
+  // Пункти навігації "Басейн/Меню/Напої/Гриль" ведуть у секцію відео — переводимо їх на
+  // потрібний стоп напряму через goToStage, а не через нативний якір (панелі лежать одна
+  // на одній, inset:0, тож просто проскролити до елемента недостатньо — потрібен саме
+  // виклик, який показує відповідну панель).
+  const STAGE_ANCHORS = { pool: 1, menu: 2, drinks: 3, grill: 4 };
+  document.querySelectorAll('.navlinks a[href^="#"]').forEach((a) => {
+    const id = a.getAttribute('href').slice(1);
+    if(!(id in STAGE_ANCHORS)) return;
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      outer.scrollIntoView({ behavior:'auto', block:'start' });
+      goToStage(STAGE_ANCHORS[id]);
+    });
+  });
 </script>
 
 </body>
