@@ -96,7 +96,7 @@
   /* ===== SCROLL-VIDEO NARRATIVE (5 stops) ===== */
   .reel-outer{
     position:relative;
-    height:500vh;
+    height:180vh;
   }
   .reel-pin{
     position:sticky;top:0;
@@ -208,8 +208,10 @@
 </header>
 
 <!-- ===== SCROLL-DRIVEN VIDEO NARRATIVE, 5 STOPS =====
-     Відео скрабиться напряму від прогресу скролу (реальне відтворення відео, синхронізоване
-     зі скролом, а не перемикання картинок). Файл reel.mp4 лежить поруч у репозиторії. -->
+     Один "скрол-жест" (колесо миші/трекпад/свайп) = один перехід між двома стоп-кадрами.
+     Вперед — відео реально програється (висока якість), назад — керований сік за 450мс.
+     Поки триває перехід, скрол заблокований, щоб один жест = одна анімація. Файл reel.mp4
+     лежить поруч у репозиторії. -->
 <section class="reel-outer" id="reel">
   <div class="reel-pin">
     <div class="reel-media">
@@ -390,56 +392,106 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   let videoReady = false;
-  let videoDuration = 0;
-  let lastSetTime = -1;
+  let stopTimes = [0, 0, 0, 0, 0];
+  let stage = 0;
+  let isAnimating = false;
+
+  function renderStage(){
+    panels.forEach((p,i) => p.classList.toggle('active', i === stage));
+    segs.forEach((s,i) => { s.style.width = i <= stage ? '100%' : '0%'; });
+    scrollCue.style.opacity = stage === 0 ? '1' : '0';
+  }
+  renderStage();
 
   if (reduceMotion) {
     reelVideo.removeAttribute('src');
   } else {
     reelVideo.addEventListener('loadedmetadata', () => {
       videoReady = true;
-      videoDuration = reelVideo.duration || 0;
-      // iOS Safari refuses to seek a video that has never played — unlock it with a silent play/pause.
+      const d = reelVideo.duration || 0;
+      stopTimes = Array.from({ length: STAGE_COUNT }, (_, i) => d * i / (STAGE_COUNT - 1));
+      reelVideo.currentTime = stopTimes[0];
+      // iOS Safari refuses to seek/scrub a video that has never played — unlock it silently.
       reelVideo.play().then(() => reelVideo.pause()).catch(() => {});
-      updateReel();
     });
   }
-  // Якщо reduceMotion увімкнено — лишається лише poster-кадр відео (без відтворення).
 
-  function updateReel(){
+  function isReelInView(){
     const rect = outer.getBoundingClientRect();
-    const total = outer.offsetHeight - window.innerHeight;
-    let progress = (-rect.top) / total;
-    progress = Math.max(0, Math.min(1, progress));
+    return rect.top <= 0 && rect.bottom > 0;
+  }
 
-    const stageProgress = progress * STAGE_COUNT;
-    let activeStage = Math.floor(stageProgress);
-    if(activeStage >= STAGE_COUNT) activeStage = STAGE_COUNT - 1;
-    const withinStage = stageProgress - activeStage;
+  // Один перехід = один "стоп" -> наступний "стоп". Вперед — справжнє відтворення відео
+  // (браузер декодує його послідовно, тож картинка лишається чіткою, без артефактів
+  // скрабінгу). Назад — <video> не вміє грати задом наперед, тож керовано "сіком" за
+  // фіксовані 450мс, теж одним плавним рухом, а не миготінням кадрів.
+  function goToStage(target){
+    if(target === stage || target < 0 || target >= STAGE_COUNT) return;
+    if(!videoReady){ stage = target; renderStage(); return; }
 
-    panels.forEach((p,i) => p.classList.toggle('active', i === activeStage));
+    isAnimating = true;
+    const from = stopTimes[stage];
+    const to = stopTimes[target];
+    const forward = target > stage;
+    stage = target;
+    renderStage();
 
-    segs.forEach((s,i) => {
-      if(i < activeStage) s.style.width = '100%';
-      else if(i === activeStage) s.style.width = (withinStage*100)+'%';
-      else s.style.width = '0%';
-    });
-
-    scrollCue.style.opacity = progress > 0.03 ? '0' : '1';
-
-    // Відео скрабиться безперервно по всій довжині розповіді: progress 0..1 -> весь кліп 0..duration.
-    if(videoReady && videoDuration > 0){
-      const target = Math.min(progress * videoDuration, videoDuration - 0.03);
-      if(Math.abs(target - lastSetTime) > 0.01){
-        reelVideo.currentTime = target;
-        lastSetTime = target;
-      }
+    if(forward){
+      let onTime;
+      const finish = () => {
+        reelVideo.removeEventListener('timeupdate', onTime);
+        reelVideo.pause();
+        reelVideo.currentTime = to;
+        isAnimating = false;
+      };
+      onTime = () => { if(reelVideo.currentTime >= to - 0.02) finish(); };
+      reelVideo.currentTime = from;
+      reelVideo.addEventListener('timeupdate', onTime);
+      reelVideo.play().catch(finish);
+      setTimeout(() => { if(isAnimating) finish(); }, Math.abs(to - from) * 1000 + 800);
+    } else {
+      const dur = 450;
+      const t0 = performance.now();
+      const step = (now) => {
+        const t = Math.min(1, (now - t0) / dur);
+        reelVideo.currentTime = from + (to - from) * t;
+        if(t < 1) requestAnimationFrame(step);
+        else isAnimating = false;
+      };
+      requestAnimationFrame(step);
     }
   }
 
-  window.addEventListener('scroll', updateReel, { passive:true });
-  window.addEventListener('resize', updateReel);
-  updateReel();
+  window.addEventListener('wheel', (e) => {
+    if(!isReelInView()) return;
+    if(isAnimating){ e.preventDefault(); return; }
+    const dir = e.deltaY > 0 ? 1 : (e.deltaY < 0 ? -1 : 0);
+    if(dir === 0) return;
+    const target = stage + dir;
+    if(target < 0 || target >= STAGE_COUNT) return; // let the browser hand off to normal scroll
+    e.preventDefault();
+    goToStage(target);
+  }, { passive:false });
+
+  let touchStartY = null;
+  window.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; }, { passive:true });
+
+  window.addEventListener('touchmove', (e) => {
+    if(touchStartY === null || !isReelInView()) return;
+    if(isAnimating){ e.preventDefault(); return; }
+    const dy = touchStartY - e.touches[0].clientY;
+    if(Math.abs(dy) < 36){ e.preventDefault(); return; }
+    const dir = dy > 0 ? 1 : -1;
+    const target = stage + dir;
+    touchStartY = null;
+    if(target < 0 || target >= STAGE_COUNT) return;
+    e.preventDefault();
+    goToStage(target);
+  }, { passive:false });
+
+  window.addEventListener('touchend', () => { touchStartY = null; });
+
+  window.addEventListener('resize', renderStage);
 </script>
 
 </body>
