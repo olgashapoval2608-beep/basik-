@@ -105,7 +105,7 @@
     background:var(--ink);
   }
   .reel-media{position:absolute;inset:0;width:100%;height:100%;}
-  .reel-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;}
+  .reel-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;filter:contrast(1.06) saturate(1.08);}
   .reel-scrim{
     position:absolute;inset:0;z-index:1;
     background:linear-gradient(0deg, rgba(4,14,16,.86) 0%, rgba(4,14,16,.28) 42%, rgba(4,14,16,.18) 100%);
@@ -395,6 +395,7 @@
   let stopTimes = [0, 0, 0, 0, 0];
   let stage = 0;
   let isAnimating = false;
+  let transitionId = 0;
 
   function renderStage(){
     panels.forEach((p,i) => p.classList.toggle('active', i === stage));
@@ -421,18 +422,26 @@
     return rect.top <= 0 && rect.bottom > 0;
   }
 
-  // Один перехід = один "стоп" -> наступний "стоп". Вперед — справжнє відтворення відео
-  // (браузер декодує його послідовно, тож картинка лишається чіткою, без артефактів
-  // скрабінгу). Назад — <video> не вміє грати задом наперед, тож керовано "сіком" за
-  // фіксовані 450мс, теж одним плавним рухом, а не миготінням кадрів.
+  // Один перехід = один "стоп" -> наступний "стоп", в обидва боки в однаковому темпі.
+  // Вперед — справжнє відтворення відео (браузер декодує його послідовно, тож картинка
+  // лишається чіткою). Назад — <video> не вміє грати задом наперед, тож керовано "сіком"
+  // по дрібних кроках (rAF), але за той самий час, що й прямий відрізок — тому це теж
+  // читається як анімація, а не миттєвий стрибок.
   function goToStage(target){
     if(target === stage || target < 0 || target >= STAGE_COUNT) return;
     if(!videoReady){ stage = target; renderStage(); return; }
 
+    // Кожен виклик отримує свій "квиток покоління": якщо користувач встигає скролнути ще
+    // раз до завершення safety-таймауту попереднього переходу, застарілі колбеки (onTime/
+    // setTimeout/rAF) від попереднього виклику розпізнають себе як застарілі й нічого не
+    // зламають — без цього вони могли б передчасно скинути isAnimating під час ще активної
+    // наступної анімації.
+    const myId = ++transitionId;
     isAnimating = true;
     const from = stopTimes[stage];
     const to = stopTimes[target];
     const forward = target > stage;
+    const segmentMs = Math.abs(to - from) * 1000;
     stage = target;
     renderStage();
 
@@ -440,19 +449,24 @@
       let onTime;
       const finish = () => {
         reelVideo.removeEventListener('timeupdate', onTime);
+        if(myId !== transitionId) return;
         reelVideo.pause();
-        reelVideo.currentTime = to;
+        // Якщо відтворення вже дійшло до цільового кадру природним шляхом — не робимо
+        // додатковий seek (зайвий seek може показати менш чіткий, не повністю декодований
+        // кадр). Підправляємо currentTime лише якщо реально відстаємо від цілі.
+        if(Math.abs(reelVideo.currentTime - to) > 0.05) reelVideo.currentTime = to;
         isAnimating = false;
       };
-      onTime = () => { if(reelVideo.currentTime >= to - 0.02) finish(); };
+      onTime = () => { if(myId === transitionId && reelVideo.currentTime >= to - 0.02) finish(); };
       reelVideo.currentTime = from;
       reelVideo.addEventListener('timeupdate', onTime);
       reelVideo.play().catch(finish);
-      setTimeout(() => { if(isAnimating) finish(); }, Math.abs(to - from) * 1000 + 800);
+      setTimeout(() => { if(myId === transitionId && isAnimating) finish(); }, segmentMs + 800);
     } else {
-      const dur = 450;
+      const dur = Math.max(segmentMs, 300);
       const t0 = performance.now();
       const step = (now) => {
+        if(myId !== transitionId) return;
         const t = Math.min(1, (now - t0) / dur);
         reelVideo.currentTime = from + (to - from) * t;
         if(t < 1) requestAnimationFrame(step);
