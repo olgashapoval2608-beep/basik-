@@ -117,10 +117,11 @@
     position:absolute;inset:0;
     display:flex;align-items:flex-end;
     opacity:0;pointer-events:none;
-    transition:opacity .45s ease;
+    transform:translateY(14px);
+    transition:opacity .5s ease, transform .6s cubic-bezier(.16,.84,.44,1);
     padding:0 0 76px;
   }
-  .panel.active{opacity:1;pointer-events:auto;}
+  .panel.active{opacity:1;pointer-events:auto;transform:translateY(0);}
   .panel-inner{max-width:var(--max-w);margin:0 auto;padding:0 32px;width:100%;color:var(--white);}
 
   .stop-index{display:flex;gap:8px;margin-bottom:22px;}
@@ -159,23 +160,54 @@
   .rules{padding:120px 0;background:var(--cream);}
   .section-head{max-width:640px;margin-bottom:56px;}
   .section-head h2{font-size:clamp(30px,3.8vw,46px);margin-top:14px;}
-  .rules-list{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(11,30,34,.1);border:1px solid rgba(11,30,34,.1);}
-  .rule-item{background:var(--cream);padding:30px 32px;transition:background .3s ease;}
-  .rule-item:hover{background:var(--white);}
-  .rule-item .rnum{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--water);}
-  .rule-item p{margin-top:12px;font-size:15px;color:#3b332e;}
+  .rules-list{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .rule-item{
+    background:var(--white);
+    border-radius:20px;
+    padding:32px 28px;
+    box-shadow:0 4px 20px rgba(11,30,34,.05);
+    border:1px solid rgba(11,30,34,.06);
+    transition:transform .3s ease, box-shadow .3s ease;
+  }
+  .rule-item:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(11,30,34,.1);}
+  .rule-item .rnum{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:38px;height:38px;border-radius:11px;
+    background:linear-gradient(135deg, var(--water), var(--teal-mid));
+    color:var(--white);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;
+  }
+  .rule-item p{margin-top:16px;font-size:15px;color:#3b332e;line-height:1.55;}
+  .rules-list .reveal:nth-child(2){transition-delay:.07s;}
+  .rules-list .reveal:nth-child(3){transition-delay:.14s;}
+  .rules-list .reveal:nth-child(4){transition-delay:.21s;}
+  .rules-list .reveal:nth-child(5){transition-delay:.28s;}
+  .rules-list .reveal:nth-child(6){transition-delay:.35s;}
 
   .findus{padding:0 0 120px;background:var(--cream);}
-  .findus-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(11,30,34,.1);border:1px solid rgba(11,30,34,.1);}
-  .map-box{min-height:460px;background:#dcd6c8;}
+  .findus-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  .map-box{min-height:460px;background:#dcd6c8;border-radius:24px;overflow:hidden;box-shadow:0 8px 32px rgba(11,30,34,.08);}
   .map-box iframe{width:100%;height:100%;min-height:460px;border:0;filter:grayscale(15%) contrast(1.05);}
-  .contact-panel{background:var(--ink);color:var(--white);padding:56px 48px;display:flex;flex-direction:column;justify-content:center;}
+  .contact-panel{
+    background:var(--ink);color:var(--white);padding:56px 48px;
+    display:flex;flex-direction:column;justify-content:center;
+    border-radius:24px;box-shadow:0 8px 32px rgba(11,30,34,.08);
+  }
   .contact-panel h2{font-size:clamp(26px,3vw,36px);color:var(--white);}
   .contact-panel p{margin-top:14px;color:rgba(255,255,255,.68);font-size:14.5px;max-width:380px;}
-  .info-row{display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.12);}
-  .info-row span:first-child{color:rgba(255,255,255,.55);font-size:12.5px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;}
-  .info-row span:last-child{font-size:15px;font-weight:500;text-align:right;}
+  .info-row{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.12);}
+  .info-icon{
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    width:34px;height:34px;border-radius:10px;
+    background:rgba(255,255,255,.1);font-size:15px;
+  }
+  .info-text{flex:1;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;}
+  .info-label{color:rgba(255,255,255,.55);font-size:12.5px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;}
+  .info-value{font-size:15px;font-weight:500;text-align:right;}
   .contact-actions{margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;}
+
+  /* Легка поява елементів при скролі у в'юпорт ("надписи з'являються красиво") */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,.84,.44,1), transform .7s cubic-bezier(.16,.84,.44,1);}
+  .reveal.is-visible{opacity:1;transform:translateY(0);}
 
   footer{padding:36px 0;background:var(--cream);border-top:1px solid rgba(11,30,34,.1);}
   footer .wrap{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#7a6f66;flex-wrap:wrap;gap:12px;}
@@ -187,8 +219,30 @@
     .rules-list{grid-template-columns:1fr;}
     .findus-grid{grid-template-columns:1fr;}
     .map-box, .map-box iframe{min-height:320px;}
-    .panel{padding-bottom:48px;}
     .panel h1,.panel h2{font-size:clamp(28px,7vw,44px);}
+
+    /* На мобільному відмовляємось від скрол-жестів і живого відео — забагато "смикань"
+       на тач-скролі й зайвий трафік. Замість цього кожна панель — звичайна секція на весь
+       екран зі своїм статичним стоп-кадром на фоні (той самий кадр, що й у відео). */
+    .reel-outer{height:auto;}
+    .reel-pin{position:static;height:auto;overflow:visible;}
+    .reel-media{display:none;}
+    .reel-scrim{display:none;}
+    .reel-panels{position:static;}
+    .scroll-cue{display:none;}
+    .stop-index{display:none;}
+    .panel{
+      position:relative;inset:auto;
+      height:100svh;
+      opacity:1!important;pointer-events:auto!important;transform:none!important;
+      padding-bottom:48px;
+      background-image:var(--stop-bg);background-size:cover;background-position:center;
+    }
+    .panel::before{
+      content:"";position:absolute;inset:0;z-index:0;
+      background:linear-gradient(0deg, rgba(4,14,16,.86) 0%, rgba(4,14,16,.28) 42%, rgba(4,14,16,.18) 100%);
+    }
+    .panel-inner{position:relative;z-index:1;}
   }
   @media (max-width:480px){
     .logo{font-size:19px;}
@@ -198,6 +252,7 @@
     html{scroll-behavior:auto;}
     .scroll-cue .line{animation:none;}
     .panel{transition:none;}
+    .reveal{transition:none;opacity:1;transform:none;}
   }
 </style>
 </head>
@@ -234,7 +289,7 @@
     <div class="reel-scrim"></div>
 
     <div class="reel-panels">
-      <div class="panel active" data-panel="0">
+      <div class="panel active" data-panel="0" style="--stop-bg:url('stops/stop-0.jpg')">
         <div class="panel-inner">
           <div class="stop-index">
             <div class="seg"><i data-seg="0"></i></div><div class="seg"><i data-seg="1"></i></div>
@@ -249,7 +304,7 @@
         </div>
       </div>
 
-      <div class="panel" data-panel="1" id="pool">
+      <div class="panel" data-panel="1" id="pool" style="--stop-bg:url('stops/stop-1.jpg')">
         <div class="panel-inner">
           <div class="stop-index">
             <div class="seg"><i data-seg="0"></i></div><div class="seg"><i data-seg="1"></i></div>
@@ -274,7 +329,7 @@
         </div>
       </div>
 
-      <div class="panel" data-panel="2" id="menu">
+      <div class="panel" data-panel="2" id="menu" style="--stop-bg:url('stops/stop-2.jpg')">
         <div class="panel-inner">
           <div class="stop-index">
             <div class="seg"><i data-seg="0"></i></div><div class="seg"><i data-seg="1"></i></div>
@@ -295,7 +350,7 @@
         </div>
       </div>
 
-      <div class="panel" data-panel="3" id="drinks">
+      <div class="panel" data-panel="3" id="drinks" style="--stop-bg:url('stops/stop-3.jpg')">
         <div class="panel-inner">
           <div class="stop-index">
             <div class="seg"><i data-seg="0"></i></div><div class="seg"><i data-seg="1"></i></div>
@@ -317,7 +372,7 @@
         </div>
       </div>
 
-      <div class="panel" data-panel="4" id="grill">
+      <div class="panel" data-panel="4" id="grill" style="--stop-bg:url('stops/stop-4.jpg')">
         <div class="panel-inner">
           <div class="stop-index">
             <div class="seg"><i data-seg="0"></i></div><div class="seg"><i data-seg="1"></i></div>
@@ -349,39 +404,39 @@
 
 <section class="rules" id="rules">
   <div class="wrap">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="eyebrow">Перед тим як пірнути</div>
       <h2>Правила SOVBEZ Blue Heaven.</h2>
     </div>
     <div class="rules-list">
-      <div class="rule-item"><div class="rnum">01</div><p>Без душу не входимо.</p></div>
-      <div class="rule-item"><div class="rnum">02</div><p>Не стрибаємо — тут не батут.</p></div>
-      <div class="rule-item"><div class="rnum">03</div><p>Діти — тільки під наглядом батьків.</p></div>
-      <div class="rule-item"><div class="rnum">04</div><p>Їжу з собою приносити заборонено — у нас є все, щоб смачно і з комфортом відпочити.</p></div>
-      <div class="rule-item"><div class="rnum">05</div><p>Тиша, chill і повага до кожного відвідувача. Вайбуйте красиво 💦</p></div>
-      <div class="rule-item"><div class="rnum">06</div><p>Бронювання місць приймаємо лише на вихідні дні.</p></div>
+      <div class="rule-item reveal"><div class="rnum">01</div><p>Без душу не входимо.</p></div>
+      <div class="rule-item reveal"><div class="rnum">02</div><p>Не стрибаємо — тут не батут.</p></div>
+      <div class="rule-item reveal"><div class="rnum">03</div><p>Діти — тільки під наглядом батьків.</p></div>
+      <div class="rule-item reveal"><div class="rnum">04</div><p>Їжу з собою приносити заборонено — у нас є все, щоб смачно і з комфортом відпочити.</p></div>
+      <div class="rule-item reveal"><div class="rnum">05</div><p>Тиша, chill і повага до кожного відвідувача. Вайбуйте красиво 💦</p></div>
+      <div class="rule-item reveal"><div class="rnum">06</div><p>Бронювання місць приймаємо лише на вихідні дні.</p></div>
     </div>
   </div>
 </section>
 
 <section class="findus" id="findus">
   <div class="wrap">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="eyebrow">Як нас знайти</div>
       <h2>SOVBEZ Blue Heaven, Фастів.</h2>
     </div>
     <div class="findus-grid">
-      <div class="map-box">
+      <div class="map-box reveal">
         <iframe src="https://maps.google.com/maps?q=SOVBEZ%20Blue%20Heaven%20Фастів&t=&z=14&ie=UTF8&iwloc=&output=embed" loading="lazy" allowfullscreen></iframe>
       </div>
-      <div class="contact-panel">
+      <div class="contact-panel reveal">
         <h2>Забронюй місце під сонцем.</h2>
         <p>Залиш номер телефону — передзвонимо і підтвердимо бронювання на обраний день.</p>
         <div>
-          <div class="info-row"><span>Адреса</span><span>Фастів · мапа в Instagram-біо</span></div>
-          <div class="info-row"><span>Телефон</span><span>[вкажи номер]</span></div>
-          <div class="info-row"><span>Instagram</span><span>@sovbezblueheaven</span></div>
-          <div class="info-row"><span>Графік</span><span>Щодня, 09:00–22:00</span></div>
+          <div class="info-row"><span class="info-icon">📍</span><span class="info-text"><span class="info-label">Адреса</span><span class="info-value">Фастів · мапа в Instagram-біо</span></span></div>
+          <div class="info-row"><span class="info-icon">📞</span><span class="info-text"><span class="info-label">Телефон</span><span class="info-value">[вкажи номер]</span></span></div>
+          <div class="info-row"><span class="info-icon">📷</span><span class="info-text"><span class="info-label">Instagram</span><span class="info-value">@sovbezblueheaven</span></span></div>
+          <div class="info-row"><span class="info-icon">🕒</span><span class="info-text"><span class="info-label">Графік</span><span class="info-value">Щодня, 09:00–22:00</span></span></div>
         </div>
         <div class="contact-actions">
           <a href="tel:+380000000000" class="btn btn-primary">Подзвонити зараз</a>
@@ -411,6 +466,18 @@
   const reelVideo = document.getElementById('reelVideo');
   const reelVideoReverse = document.getElementById('reelVideoReverse');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // На мобільному (той самий брейкпоінт, що й у CSS вище) відмовляємось від скрол-жестів і
+  // живого відео: кожна панель стає звичайною секцією зі своїм статичним стоп-кадром на фоні
+  // (див. .panel{background-image:var(--stop-bg)} в CSS). Це і без "смикань" на тач-скролі,
+  // і не тягне ~13МБ відео на мобільний трафік.
+  const isMobile = window.matchMedia('(max-width:860px)').matches;
+
+  if(isMobile){
+    reelVideo.removeAttribute('src');
+    reelVideoReverse.removeAttribute('src');
+    reelVideo.remove();
+    reelVideoReverse.remove();
+  } else {
 
   let videoReady = false;
   let reverseReady = false;
@@ -440,8 +507,17 @@
   function computeReverseStops(){
     if(!videoReady || !reverseDuration) return;
     reverseStopTimes = stopTimes.map(t => Math.max(0, reverseDuration - t));
+    // Реверсне відео тримаємо заздалегідь виставленим на кадр поточного стопу (просто
+    // прихованим), щоб коли користувач нарешті скролне назад, не було жодного live-сіку
+    // прямо в момент жесту — а саме цей сік і був причиною "смикання" на зворотному ході.
+    prewarmReverseTo(stage);
   }
   let reverseDuration = 0;
+
+  function prewarmReverseTo(stageIdx){
+    if(!reverseReady) return;
+    seekOnce(reelVideoReverse, reverseStopTimes[stageIdx]);
+  }
 
   if (reduceMotion) {
     reelVideo.removeAttribute('src');
@@ -531,6 +607,7 @@
       if(myId !== transitionId) return;
       if(Math.abs(reelVideo.currentTime - to) > 0.05) reelVideo.currentTime = to;
       isAnimating = false;
+      prewarmReverseTo(target);
     } else if(reverseReady){
       const revFrom = reverseStopTimes[fromStage];
       const revTo = reverseStopTimes[target];
@@ -620,6 +697,26 @@
       goToStage(STAGE_ANCHORS[id]);
     });
   });
+  } // кінець "if(!isMobile)"
+
+  // Легка поява заголовків/карток при скролі у в'юпорт — працює однаково на мобільному й
+  // десктопі, незалежно від відео-машини вище.
+  if(!reduceMotion){
+    const revealEls = document.querySelectorAll('.reveal');
+    if(revealEls.length && 'IntersectionObserver' in window){
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if(entry.isIntersecting){
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+      revealEls.forEach((el) => io.observe(el));
+    } else {
+      revealEls.forEach((el) => el.classList.add('is-visible'));
+    }
+  }
 </script>
 
 </body>
