@@ -221,33 +221,32 @@
     .map-box, .map-box iframe{min-height:320px;}
     .panel h1,.panel h2{font-size:clamp(28px,7vw,44px);}
 
-    /* Мобільний реел: той самий скрол-жест і те саме відео, що й на десктопі (той самий
-       stage-механізм), але замість повноекранного відео з обрізаними боками (object-fit:
-       cover у високій вузькій рамці з'їдав значну частину кадру) — відео показане у своєму
-       природному співвідношенні сторін (як прямокутна "фотка" зверху), а перехід між
-       стопами рухає текстову стрічку ВБІК, а не кросфейдом на місці. Коли стрічка доходить
-       до останньої картки — скрол, як і на десктопі, іде далі вниз до "Правил". */
-    .reel-pin{display:flex;flex-direction:column;}
-    .reel-media{
-      position:relative;inset:auto;
-      width:100%;height:auto;aspect-ratio:1280/620;flex-shrink:0;
-    }
-    .reel-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+    /* Мобільний реел: full-screen "історії" — кожен стоп це окремий повноекранний слайд зі
+       своїм застиглим стоп-кадром на весь екран (той самий кадр, що й на ПК) і написами
+       поверх нього. Скрол-жест гортає слайди ВБІК (як сторіз), а не кросфейдом на місці.
+       Коли долистали до останнього слайду — скрол, як і на десктопі, іде далі вниз до
+       "Правил". Живий playback тут не потрібен: кожен слайд — це <video>, поставлене на
+       паузу рівно на потрібній секунді (додається в JS, див. isMobile-гілку). */
+    .reel-media{display:none;}
     .reel-scrim{display:none;}
     .reel-panels{
       position:relative;inset:auto;z-index:auto;
-      flex:1;min-height:0;
       display:flex;width:500%;height:100%;
-      transition:transform .5s cubic-bezier(.16,.84,.44,1);
+      transition:transform .45s cubic-bezier(.16,.84,.44,1);
     }
     .panel{
       position:relative;inset:auto;width:20%;flex-shrink:0;height:100%;
-      display:block;
+      display:flex;align-items:flex-end;
       opacity:1!important;pointer-events:auto!important;transform:none!important;
-      padding:22px 20px 32px;overflow-y:auto;
-      background:var(--ink);color:var(--white);
+      padding:0 20px 40px;overflow:hidden;
+      background:var(--ink);
     }
-    .panel-inner{padding:0;max-width:none;}
+    .panel video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
+    .panel::before{
+      content:"";position:absolute;inset:0;z-index:1;
+      background:linear-gradient(0deg, rgba(4,14,16,.88) 0%, rgba(4,14,16,.3) 45%, rgba(4,14,16,.14) 100%);
+    }
+    .panel-inner{position:relative;z-index:2;padding:0;max-width:none;max-height:78svh;overflow-y:auto;}
     .stop-index{display:none;}
     .scroll-cue{display:none;}
   }
@@ -473,11 +472,13 @@
   const reelVideo = document.getElementById('reelVideo');
   const reelVideoReverse = document.getElementById('reelVideoReverse');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  // Той самий stage-механізм і те саме відео працюють однаково на мобільному й десктопі —
-  // єдина різниця в тому, ЯК стадія показується візуально (див. renderStage): на десктопі
-  // панелі кросфейдяться одна над одною поверх повноекранного відео, а на мобільному (той
-  // самий брейкпоінт, що й у CSS) відео показане у своєму природному співвідношенні сторін
-  // окремим блоком зверху, а текстові картки під ним їдуть горизонтальною стрічкою вбік.
+  // Той самий stage-механізм працює однаково на мобільному й десктопі (wheel/touch-жести,
+  // exitToNextSection), але ЯК стадія показується — різне: на десктопі панелі кросфейдяться
+  // одна над одною поверх повноекранного живого відео (форвард/реверс-програвання), а на
+  // мобільному (той самий брейкпоінт, що й у CSS) кожен стоп — окреме повноекранне <video>,
+  // поставлене на паузу рівно на потрібній секунді, і слайди їдуть горизонтальною стрічкою
+  // вбік. Живий playback під час свайпу мобільному не потрібен — це просто застиглі кадри,
+  // тож окремий forward/reverse-двигун (нижче) там не використовується взагалі.
   const isMobile = window.matchMedia('(max-width:860px)').matches;
 
   let videoReady = false;
@@ -524,7 +525,29 @@
     seekOnce(reelVideoReverse, reverseStopTimes[stageIdx]);
   }
 
-  if (reduceMotion) {
+  if(isMobile){
+    // Мобільні слайди не використовують спільний reelVideo/reelVideoReverse двигун узагалі —
+    // прибираємо його з DOM, щоб не тягнути дарма ще ~13МБ на мобільний трафік.
+    reelVideo.remove();
+    reelVideoReverse.remove();
+    if(!reduceMotion){
+      // Кожен слайд отримує власне <video src="reel.mp4">, поставлене на паузу рівно на
+      // "своїй" кураторській секунді — той самий стоп-кадр, що й на ПК, просто без спільного
+      // forward/reverse-двигуна: тут немає живого програвання під час свайпу, лише застиглий
+      // кадр, тож синхронізувати нічого не треба.
+      panels.forEach((panel, i) => {
+        const v = document.createElement('video');
+        v.muted = true; v.playsInline = true; v.preload = 'auto';
+        v.addEventListener('loadedmetadata', () => {
+          const t = Math.min(CURATED_STOPS[i], Math.max(0, v.duration - 0.02));
+          v.currentTime = t;
+          v.play().then(() => v.pause()).catch(() => {});
+        });
+        v.src = 'reel.mp4';
+        panel.insertBefore(v, panel.firstChild);
+      });
+    }
+  } else if (reduceMotion) {
     reelVideo.removeAttribute('src');
     reelVideoReverse.removeAttribute('src');
   } else {
@@ -597,9 +620,24 @@
   // reel-reverse.mp4 і теж граємо його ВПЕРЕД (воно ж якраз показує історію задом наперед) —
   // замість ручного покадрового сіку. Обидва відео мають однаковий кроп/кадрування, тож
   // перемикання між ними непомітне.
+  let mobileSlideTimer = null;
   async function goToStage(target){
     if(isAnimating) return;
     if(target === stage || target < 0 || target >= STAGE_COUNT) return;
+
+    if(isMobile){
+      // Мобільні слайди — застиглі кадри, тож тут нема чого програвати: просто міняємо
+      // стадію й даємо CSS-переходу (.reel-panels{transition:transform...}) виконати сам
+      // зсув. isAnimating тримаємо, поки той перехід не завершиться, щоб один свайп = один
+      // слайд, а не кілька відразу.
+      isAnimating = true;
+      stage = target;
+      renderStage();
+      clearTimeout(mobileSlideTimer);
+      mobileSlideTimer = setTimeout(() => { isAnimating = false; }, 480);
+      return;
+    }
+
     if(!videoReady){ stage = target; renderStage(); return; }
 
     // Кожен виклик отримує свій "квиток покоління": застарілі колбеки (rAF/setTimeout) від
